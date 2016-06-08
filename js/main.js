@@ -1,52 +1,28 @@
-var eCanvas = document.createElement('canvas');
-eCanvas.width = 600;
-eCanvas.height = 600;
-var ctx = eCanvas.getContext('2d');
-document.body.appendChild(eCanvas);
+var canvas = document.getElementById('canvas');
+var el = document.createElement('canvas');
+el.width = 1200;
+el.height = 1200;
+el.style.width = 600 +'px';
+el.style.height = 600 +'px';
+var ctx = el.getContext('2d');
+canvas.appendChild(el);
+var rect = el.getBoundingClientRect();
 
-var Stage = function () {
-  
+var isDrawing;
+
+el.onmousedown = function(e) {
+  console.log(e.clientX);
+  isDrawing = true;
+  ctx.lineWidth = 1;
+  ctx.lineJoin = ctx.lineCap = 'round';
+  ctx.moveTo(e.clientX*2-rect.left*2, e.clientY*2-rect.top*2);
 };
-
-var Cursor = function () {
-  this.x;
-  this.y;
-  this.lx;
-  this.ly;
-  this.isDlag = false;
-  this.eCanvas;
-  this.eCanvasRect;
-};
-Cursor.prototype.init = function (eCanvas) {
-  var self = this;
-  self.eCanvas = eCanvas;
-  self.eCanvasRect = self.eCanvas.getBoundingClientRect();
-
-  self.eCanvas.addEventListener('mousemove', function(event){
-    self.x = event.clientX - self.eCanvasRect.left;
-    self.y = event.clientY - self.eCanvasRect.top;
-  });
-  self.eCanvas.addEventListener('mousedown', function(event){
-    self.isDlag = true;
-    self.lx = self.x;
-    self.ly = self.y;
-  });
-  self.eCanvas.addEventListener('mouseup', function(event){
-    self.isDlag = false;
-  });
-};
-
-var cursor = new Cursor();
-cursor.init(eCanvas);
-
-eCanvas.addEventListener('mousemove', function(event){
-  if (cursor.isDlag) {
-    ctx.beginPath();
-    ctx.moveTo(cursor.lx, cursor.ly);
-    ctx.lineTo(cursor.x, cursor.y);
-    ctx.lineCap = 'round';
+el.onmousemove = function(e) {
+  if (isDrawing) {
+    ctx.lineTo(e.clientX*2-rect.left*2, e.clientY*2-rect.top*2);
     ctx.stroke();
-    cursor.lx = cursor.x;
-    cursor.ly = cursor.y;
   }
-});
+};
+el.onmouseup = function() {
+  isDrawing = false;
+};

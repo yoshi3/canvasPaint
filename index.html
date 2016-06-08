@@ -1,6 +1,66 @@
+<!DOCTYPE html>
 <html>
-<head></head>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+</head>
 <body>
-<script src="./js/main.js"></script>
+<div id="canvas"></div>
+<div id="container"></div>
+<script src="./bower_components/react/react.min.js"></script>
+<script src="./bower_components/react/react-dom.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.24/browser.min.js"></script>
+<script type="text/babel">
+var canvas = document.getElementById('canvas');
+var el = document.createElement('canvas');
+el.width = 1200;
+el.height = 1200;
+el.style.width = 600 +'px';
+el.style.height = 600 +'px';
+var ctx = el.getContext('2d');
+canvas.appendChild(el);
+var rect = el.getBoundingClientRect();
+
+var isDrawing;
+
+var lineWidth = 1;
+
+el.onmousedown = function(e) {
+  isDrawing = true;
+  ctx.beginPath();
+  ctx.lineWidth = lineWidth;
+  ctx.lineJoin = ctx.lineCap = 'round';
+  ctx.moveTo(e.clientX*2-rect.left*2, e.clientY*2-rect.top*2);
+};
+el.onmousemove = function(e) {
+  if (isDrawing) {
+    ctx.lineTo(e.clientX*2-rect.left*2, e.clientY*2-rect.top*2);
+    ctx.stroke();
+  }
+};
+el.onmouseup = function() {
+  isDrawing = false;
+};
+
+var Counter = React.createClass({
+getInitialState: function () {
+  return { lineWidth: 0 };
+},
+handleLineWidth: function (event) {
+  this.setState({
+    lineWidth: event.target.value,
+  });
+  lineWidth = this.state.lineWidth;
+},
+render: function () {
+  return (
+    <input type="range" min="0" max="50" step="1" value={this.state.lineWidth} onChange={this.handleLineWidth} />
+  );
+}
+});
+ReactDOM.render(
+<Counter />,
+document.getElementById('container')
+);
+</script>
 </body>
 </html>
